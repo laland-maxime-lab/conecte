@@ -5,10 +5,11 @@ const STORAGE_KEY_SAVED_DEVICES = 'connect_pro_saved_devices';
 const STORAGE_KEY_SESSIONS = 'connect_pro_session_history';
 
 export function getOrCreateDeviceIdentity(): { id: string; name: string; os: 'windows' | 'macos' | 'linux' | 'browser' } {
+  // Check sessionStorage first so two tabs on the same computer can test simultaneously
   try {
-    const saved = localStorage.getItem(STORAGE_KEY_DEVICE);
-    if (saved) {
-      return JSON.parse(saved);
+    const sessionSaved = sessionStorage.getItem(STORAGE_KEY_DEVICE);
+    if (sessionSaved) {
+      return JSON.parse(sessionSaved);
     }
   } catch (e) {
     // Ignore
@@ -33,7 +34,7 @@ export function getOrCreateDeviceIdentity(): { id: string; name: string; os: 'wi
 
   const identity = { id, name, os };
   try {
-    localStorage.setItem(STORAGE_KEY_DEVICE, JSON.stringify(identity));
+    sessionStorage.setItem(STORAGE_KEY_DEVICE, JSON.stringify(identity));
   } catch (e) {
     // Ignore
   }
@@ -44,7 +45,12 @@ export function getOrCreateDeviceIdentity(): { id: string; name: string; os: 'wi
 export function updateLocalDeviceName(name: string) {
   const current = getOrCreateDeviceIdentity();
   current.name = name;
-  localStorage.setItem(STORAGE_KEY_DEVICE, JSON.stringify(current));
+  try {
+    sessionStorage.setItem(STORAGE_KEY_DEVICE, JSON.stringify(current));
+    localStorage.setItem(STORAGE_KEY_DEVICE, JSON.stringify(current));
+  } catch (e) {
+    // Ignore
+  }
 }
 
 export function getSavedPairedDevices(): DeviceInfo[] {
