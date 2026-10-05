@@ -53,7 +53,7 @@ export class SocketClient {
     this.callbacks.onStatusChange?.('connecting');
 
     // Connect to origin with robust settings and explicit connection step
-    this.socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
+    this.socket = io(window.location.origin, {
       autoConnect: false,
       transports: ['websocket', 'polling'],
       reconnection: true,
@@ -63,10 +63,22 @@ export class SocketClient {
       withCredentials: false,
     });
 
+    this.socket.on('connect_error', (err: any) => {
+      console.error('[Connect Pro] Socket.IO connection error:', {
+        message: err?.message,
+        name: err?.name,
+        description: err?.description,
+        context: err?.context,
+      });
+
+      this.callbacks.onStatusChange?.('error');
+    });
+
     this.socket.on('connect', () => {
       console.log('[Connect Pro] Socket connected:', this.socket?.id);
+
       this.callbacks.onStatusChange?.('connected');
-      // Register immediately upon connection
+
       this.socket?.emit('register-device', {
         deviceId: this.currentDeviceId,
         name: this.currentDeviceName,
@@ -77,17 +89,6 @@ export class SocketClient {
     this.socket.on('disconnect', (reason) => {
       console.warn('[Connect Pro] Socket disconnected:', reason);
       this.callbacks.onStatusChange?.('disconnected');
-    });
-
-    this.socket.on('connect_error', (err: any) => {
-      console.error('[Connect Pro] Socket.IO connection error:', err);
-      console.error('[Connect Pro] Details:', {
-        message: err?.message,
-        name: err?.name,
-        description: err?.description,
-        context: err?.context,
-      });
-      this.callbacks.onStatusChange?.('error');
     });
 
     this.socket.on('registered', (data: any) => {
