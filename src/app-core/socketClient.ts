@@ -55,6 +55,7 @@ export class SocketClient {
     // Connect to same origin host with universal transports
     this.socket = io({
       transports: ['websocket', 'polling'],
+      withCredentials: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
       timeout: 10000,
