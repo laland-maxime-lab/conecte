@@ -50,24 +50,45 @@ export const WindowsGuideModal: React.FC<WindowsGuideModalProps> = ({ isOpen, on
             </p>
           </div>
 
-          {/* Solution 1: Hébergement Cloud 100% Gratuit sur Render ou Railway */}
+          {/* Solution 1: GitHub vers Render (Mise a jour continue automatique) */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 font-bold text-slate-100 text-sm">
-              <span className="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-xs">1</span>
-              <span>Option A : Héberger gratuitement en ligne (Render.com ou Railway)</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-bold text-slate-100 text-sm">
+                <span className="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-xs">1</span>
+                <span>Déploiement GitHub ➜ Render (Mise à jour automatique)</span>
+              </div>
+              <button
+                onClick={() => copyToClipboard('git remote add origin https://github.com/VOTRE_USER/connect-pro.git\ngit branch -M main\ngit push -u origin main', 'git')}
+                className="flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300"
+              >
+                {copiedSection === 'git' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedSection === 'git' ? 'Copié !' : 'Copier commandes git'}</span>
+              </button>
             </div>
 
             <p className="text-slate-400 leading-relaxed">
-              Le projet inclut déjà le fichier <code className="text-cyan-400">render.yaml</code> et <code className="text-cyan-400">Dockerfile</code>. Vous obtiendrez votre propre lien public (ex : <code>https://connect-pro.onrender.com</code>) accessible partout :
+              Dès que vous poussez un commit sur GitHub, Render détecte la mise à jour et relance l'application en moins d'une minute grâce au fichier <code className="text-cyan-400">render.yaml</code> :
             </p>
 
-            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-              <ol className="list-decimal list-inside space-y-1.5 text-slate-300">
-                <li>Téléchargez les fichiers du projet ou poussez-les sur votre <strong>GitHub</strong>.</li>
-                <li>Rendez-vous sur <strong className="text-white">Render.com</strong> (gratuit).</li>
-                <li>Cliquez sur <strong>New Web Service</strong> &gt; Connectez votre dépôt GitHub.</li>
-                <li>Render détecte automatiquement le projet Node.js et déploie le serveur WebRTC/Socket.io en 1 minute.</li>
-              </ol>
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2.5">
+              <div className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>1. Dépôt GitHub :</strong> Créez un dépôt sur <em>github.com/new</em> nommé <code>connect-pro</code> et poussez les fichiers (la branche <code>main</code> est déjà initialisée).
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>2. Sur Render.com :</strong> Cliquez sur <em>New + &gt; Web Service</em> et connectez votre dépôt GitHub.
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>3. Détection automatique :</strong> Render lit le fichier <code>render.yaml</code>, applique la commande <code>npx tsx server.ts</code> et active l'<strong>Auto-Deploy</strong>.
+                </span>
+              </div>
             </div>
           </div>
 

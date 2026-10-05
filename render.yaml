@@ -5,11 +5,9 @@ services:
     plan: free
     region: frankfurt
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: npx tsx server.ts
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
         value: "22"
-      - key: PORT
-        value: 3000
