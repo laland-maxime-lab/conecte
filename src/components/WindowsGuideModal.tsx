@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, Laptop, ShieldCheck, Cloud, Server, Terminal, Copy, Check } from 'lucide-react';
+import { X, CheckCircle, Laptop, ShieldCheck, Cloud, Server, Terminal, Copy, Check, Download } from 'lucide-react';
 
 interface WindowsGuideModalProps {
   isOpen: boolean;
@@ -48,6 +48,27 @@ export const WindowsGuideModal: React.FC<WindowsGuideModalProps> = ({ isOpen, on
             <p className="text-[11px] leading-relaxed text-amber-300/90">
               Google AI Studio sécurise ses URLs de développement (<code>ais-dev-...</code>) avec une authentification Google obligatoire et des en-têtes CSP restrictifs. Si le second ordinateur n'est pas connecté à votre compte Google dans la même session, Google affiche <em>« Page not found »</em>.
             </p>
+          </div>
+
+          {/* Direct ZIP Download Banner */}
+          <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                <span>📦 Télécharger le Projet Complet (Archive ZIP)</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Prêt à l'emploi</span>
+              </h4>
+              <p className="text-slate-400 text-[11px] mt-1">
+                Contient tous les codes sources, le script <code>demarrer-windows.bat</code>, <code>render.yaml</code>, <code>Dockerfile</code> et la configuration complète.
+              </p>
+            </div>
+            <a
+              href="/download"
+              download="connect-pro-desktop.zip"
+              className="shrink-0 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition cursor-pointer"
+            >
+              <Download className="w-4 h-4" />
+              <span>Télécharger (.ZIP)</span>
+            </a>
           </div>
 
           {/* Solution 1: GitHub vers Render (Mise a jour continue automatique) */}

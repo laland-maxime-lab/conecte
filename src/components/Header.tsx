@@ -103,13 +103,26 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </button>
 
+        {/* Download Project ZIP */}
+        <a
+          href="/download"
+          download="connect-pro-desktop.zip"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/15 hover:bg-emerald-600/25 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition cursor-pointer shadow-sm"
+          title="Télécharger l'intégralité du code source en fichier ZIP"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Télécharger ZIP</span>
+        </a>
+
         {/* Windows & Electron packaging guide button */}
         <button
           onClick={onOpenGuide}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 hover:text-blue-300 border border-blue-500/30 text-xs font-semibold transition cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5" />
-          <span>Guide 2 PC</span>
+          <span>Guide Déploiement</span>
         </button>
       </div>
     </header>

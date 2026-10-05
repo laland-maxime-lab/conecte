@@ -9,11 +9,25 @@ import type { DeviceInfo, AccessPermissions, SessionMode } from './src/types/ind
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+import fs from 'fs';
+
 const app = express();
 const httpServer = http.createServer(app);
 const PORT = process.env.NODE_ENV === 'production' ? (process.env.PORT || 3000) : 3000;
 
 app.use(express.json({ limit: '50mb' }));
+
+// Route to download project ZIP
+app.get(['/download', '/api/download', '/api/download-zip'], (req, res) => {
+  const publicZip = path.resolve(__dirname, 'public', 'connect-pro.zip');
+  const distZip = path.resolve(__dirname, 'dist', 'connect-pro.zip');
+  const target = fs.existsSync(publicZip) ? publicZip : distZip;
+  if (fs.existsSync(target)) {
+    res.download(target, 'connect-pro-desktop.zip');
+  } else {
+    res.status(404).json({ error: 'Fichier zip non trouvé' });
+  }
+});
 
 // Socket.IO Server configuration
 const io = new SocketIOServer(httpServer, {

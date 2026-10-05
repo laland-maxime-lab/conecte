@@ -3,11 +3,11 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package and npm config files
+COPY package*.json .npmrc* ./
 
-# Install dependencies
-RUN npm ci --include=dev
+# Install dependencies safely with legacy peer deps
+RUN npm install --legacy-peer-deps
 
 # Copy application files
 COPY . .
@@ -22,4 +22,4 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 # Start server
-CMD ["node", "server.ts"]
+CMD ["npx", "tsx", "server.ts"]

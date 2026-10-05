@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-server
+.git
+.aistudio
+.cache
+*.log
+.env
+.env.local
