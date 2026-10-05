@@ -2,7 +2,10 @@
   "name": "Connect Pro - Bureau à Distance",
   "description": "Solution personnelle et sécurisée de contrôle à distance d'ordinateur par code à 6 chiffres, écran WebRTC en temps réel, clavier/souris et transfert de fichiers.",
   "requestFramePermissions": [
-    "display-capture"
+    "display-capture",
+    "clipboard-read",
+    "clipboard-write",
+    "microphone"
   ],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
