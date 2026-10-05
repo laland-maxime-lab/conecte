@@ -350,12 +350,12 @@ export function useRemoteSession() {
     setIsRequestPending(false);
 
     // Setup input controller to feed directly to screenCapture simulator
-    inputControllerRef.current.setSendCallback((event) => {
-      if (event.type === 'mousemove') {
+    inputControllerRef.current.setSendCallback((event: InputEvent) => {
+      if (event.type === 'mouse-move') {
         screenCaptureRef.current.applySimulatedInput('mouse', { x: event.x, y: event.y });
-      } else if (event.type === 'mousedown' || event.type === 'click') {
+      } else if (event.type === 'mouse-down' || event.type === 'mouse-click') {
         screenCaptureRef.current.applySimulatedInput('mouse', { x: event.x, y: event.y });
-      } else if (event.type === 'keydown') {
+      } else if (event.type === 'key-down') {
         screenCaptureRef.current.applySimulatedInput('key', { key: event.key });
       }
     });
