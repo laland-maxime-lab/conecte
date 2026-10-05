@@ -69,17 +69,12 @@ export default function App() {
   };
 
   const handleQuickSelfTest = () => {
-    if (pinInfo?.pin) {
-      setPresetPin(pinInfo.pin);
-      setActiveTab('connect');
-    }
+    actions.startDemoSession();
   };
 
-  const handleStartSimulation = async () => {
-    // Starts an immediate local test session to experience remote desktop tools
-    if (pinInfo?.pin) {
-      actions.requestConnection(pinInfo.pin, 'full_control');
-    }
+  const handleStartSimulation = () => {
+    // Starts an immediate interactive demo session
+    actions.startDemoSession();
   };
 
   const handleSelectDevice = (dev: DeviceInfo) => {

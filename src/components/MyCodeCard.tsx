@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Check, RefreshCw, KeyRound, ShieldAlert, Clock, ArrowRight } from 'lucide-react';
+import { Copy, Check, RefreshCw, KeyRound, ShieldAlert, Clock, ArrowRight, QrCode, Share2 } from 'lucide-react';
 import { DeviceInfo, PinCodeInfo } from '../types';
 
 interface MyCodeCardProps {
@@ -16,6 +16,8 @@ export const MyCodeCard: React.FC<MyCodeCardProps> = ({
   onQuickSelfTest,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [urlCopied, setUrlCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState<number>(0);
   const [isRotating, setIsRotating] = useState(false);
 
@@ -125,6 +127,61 @@ export const MyCodeCard: React.FC<MyCodeCardProps> = ({
           </div>
         </div>
 
+        {/* Link for 2nd PC & QR Code toggle */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs">
+            <div className="flex items-center gap-2 truncate">
+              <Share2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="text-slate-400 text-[11px] truncate">Lien 2ème PC :</span>
+              <span className="font-mono text-cyan-300 font-bold text-[11px] truncate">
+                {typeof window !== 'undefined' ? window.location.origin : 'https://conecte.onrender.com'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    navigator.clipboard.writeText(window.location.origin);
+                    setUrlCopied(true);
+                    setTimeout(() => setUrlCopied(false), 2000);
+                  }
+                }}
+                className={`px-2 py-1 rounded text-[11px] font-medium transition cursor-pointer ${
+                  urlCopied ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                }`}
+                title="Copier l'adresse exacte pour l'envoyer au 2ème PC"
+              >
+                {urlCopied ? 'Copié !' : 'Copier'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowQr(!showQr)}
+                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+                title="Afficher le QR code pour ouvrir sur un smartphone ou tablette"
+              >
+                <QrCode className="w-4 h-4 text-cyan-400" />
+              </button>
+            </div>
+          </div>
+
+          {/* QR Code view */}
+          {showQr && typeof window !== 'undefined' && (
+            <div className="mt-2 p-3 rounded-xl bg-slate-950 border border-cyan-500/30 flex flex-col items-center gap-2 animate-in fade-in">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(window.location.origin)}`}
+                alt="QR Code pour ouvrir sur le second appareil"
+                className="w-36 h-36 rounded-lg bg-white p-2 shadow"
+              />
+              <p className="text-[11px] text-slate-300 text-center font-medium">
+                Scannez avec la caméra de votre téléphone pour ouvrir instantanément
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Security Notice */}
         <div className="bg-slate-800/40 border border-slate-700/60 rounded-xl p-3.5 mb-4 text-xs text-slate-300 flex items-start gap-3">
           <ShieldAlert className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
@@ -136,12 +193,12 @@ export const MyCodeCard: React.FC<MyCodeCardProps> = ({
 
       {/* Quick single-machine self-test shortcut */}
       <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-        <span className="text-[11px] text-slate-400">Tester sur cette même machine ?</span>
+        <span className="text-[11px] text-slate-400">Tester sans deuxième ordinateur ?</span>
         <button
           onClick={onQuickSelfTest}
-          className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition cursor-pointer"
+          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition cursor-pointer px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20"
         >
-          <span>Auto-remplir pour tester</span>
+          <span>Lancer la Démo interactive (1-Clic)</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>

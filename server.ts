@@ -76,7 +76,7 @@ function generateUniquePin(): string {
 
 const PIN_TTL_MS = 15 * 60 * 1000; // 15 minutes TTL
 
-// Rate limit helper: 5 attempts per minute per IP
+// Rate limit helper: 60 attempts per minute per IP (relaxed for multi-device testing on shared Wi-Fi)
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const entry = rateLimitByIp.get(ip);
@@ -84,7 +84,7 @@ function checkRateLimit(ip: string): boolean {
     rateLimitByIp.set(ip, { count: 1, resetAt: now + 60000 });
     return true;
   }
-  if (entry.count >= 5) {
+  if (entry.count >= 60) {
     return false; // Rate limited
   }
   entry.count++;
@@ -409,13 +409,39 @@ io.on('connection', (socket: Socket) => {
   });
 });
 
+// Prevent server crashes from uncaught errors
+process.on('uncaughtException', (err) => {
+  console.error('[Connect Pro] Uncaught Exception safely handled:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Connect Pro] Unhandled Rejection safely handled:', reason);
+});
+
 // Configure Vite or Static files
 async function startServer() {
   if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.resolve(__dirname, 'public')));
     app.use(express.static(path.resolve(__dirname, 'dist')));
     app.get('*', (req, res) => {
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
     });
+
+    // Anti-sleep self-ping for free cloud hosts (Render / Railway)
+    // Pings /api/health every 9 minutes to prevent Render 15-minute inactivity spin down!
+    const hostUrl = process.env.RENDER_EXTERNAL_URL || 'https://conecte.onrender.com';
+    setInterval(async () => {
+      try {
+        const https = await import('https');
+        https.get(`${hostUrl}/api/health`, (res) => {
+          // Keep-alive successful
+        }).on('error', () => {
+          // Silently ignore network fluctuations
+        });
+      } catch (e) {
+        // Ignore
+      }
+    }, 9 * 60 * 1000);
   } else {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({

@@ -345,6 +345,51 @@ export function useRemoteSession() {
     inputControllerRef.current.sendShortcut(action);
   };
 
+  const handleStartDemoSession = async () => {
+    setErrorMessage(null);
+    setIsRequestPending(false);
+
+    // Setup input controller to feed directly to screenCapture simulator
+    inputControllerRef.current.setSendCallback((event) => {
+      if (event.type === 'mousemove') {
+        screenCaptureRef.current.applySimulatedInput('mouse', { x: event.x, y: event.y });
+      } else if (event.type === 'mousedown' || event.type === 'click') {
+        screenCaptureRef.current.applySimulatedInput('mouse', { x: event.x, y: event.y });
+      } else if (event.type === 'keydown') {
+        screenCaptureRef.current.applySimulatedInput('key', { key: event.key });
+      }
+    });
+
+    const captureResult = await screenCaptureRef.current.startCapture({ resolution: '1080p', fps: 60 });
+    setRemoteStream(captureResult.stream);
+    setIsSimulatedStream(true);
+
+    const demoSession: ActiveSession = {
+      id: 'demo_' + Date.now().toString(36),
+      partnerDeviceId: 'dev_demo_pc_simulated',
+      partnerDeviceName: 'PC Windows 11 (Bureau Interactif de Test)',
+      partnerDeviceOs: 'windows',
+      isHost: false,
+      mode: 'full_control',
+      startTime: Date.now(),
+      permissions: { allowControl: true, allowFileTransfer: true, allowClipboard: true, allowAudio: true },
+      connectionType: 'p2p',
+      latencyMs: 5,
+    };
+
+    setActiveSession(demoSession);
+    setChatMessages([
+      {
+        id: 'msg_welcome',
+        senderId: 'remote',
+        senderName: 'PC Windows 11 (Test)',
+        text: 'Bienvenue dans la session de test Connect Pro ! Vous pouvez déplacer la souris, taper du texte au clavier, envoyer un fichier ou ouvrir le chat.',
+        timestamp: Date.now(),
+        isSelf: false,
+      }
+    ]);
+  };
+
   return {
     deviceIdentity,
     pinInfo,
@@ -373,6 +418,7 @@ export function useRemoteSession() {
       sendFile: handleSendFile,
       cancelFileTransfer: handleCancelFileTransfer,
       sendShortcut: handleSendShortcut,
+      startDemoSession: handleStartDemoSession,
     },
   };
 }
