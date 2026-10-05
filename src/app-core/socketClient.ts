@@ -52,8 +52,9 @@ export class SocketClient {
 
     this.callbacks.onStatusChange?.('connecting');
 
-    // Connect to same origin host
-    this.socket = io(window.location.origin, {
+    // Connect to same origin host with universal transports
+    this.socket = io({
+      transports: ['websocket', 'polling'],
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
       timeout: 10000,

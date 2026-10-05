@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.resolve(__dirname, 'public')));
@@ -49,6 +49,8 @@ app.get(['/download', '/api/download', '/api/download-zip'], (req, res) => {
 // Socket.io configuration optimisée
 const io = new SocketIOServer(httpServer, {
   cors: { origin: '*', methods: ['GET', 'POST'] },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true,
   maxHttpBufferSize: 1e8,
 });
 

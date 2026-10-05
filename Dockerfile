@@ -15,11 +15,11 @@ COPY . .
 # Build Vite frontend
 RUN npm run build
 
-# Expose port
-EXPOSE 3000
+# Expose port (Render standard port is 10000)
+EXPOSE 10000
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=10000
 
 # Start server
 CMD ["npx", "tsx", "server.ts"]

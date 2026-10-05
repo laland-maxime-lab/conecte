@@ -11,3 +11,5 @@ services:
         value: production
       - key: NODE_VERSION
         value: "22"
+      - key: PORT
+        value: "10000"
