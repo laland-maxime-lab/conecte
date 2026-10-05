@@ -79,19 +79,27 @@ export function getSavedPairedDevices(): DeviceInfo[] {
 }
 
 export function savePairedDevice(device: DeviceInfo) {
-  const list = getSavedPairedDevices();
-  const index = list.findIndex(d => d.id === device.id);
-  if (index >= 0) {
-    list[index] = { ...list[index], ...device };
-  } else {
-    list.unshift(device);
+  try {
+    const list = getSavedPairedDevices();
+    const index = list.findIndex(d => d.id === device.id);
+    if (index >= 0) {
+      list[index] = { ...list[index], ...device };
+    } else {
+      list.unshift(device);
+    }
+    localStorage.setItem(STORAGE_KEY_SAVED_DEVICES, JSON.stringify(list));
+  } catch (e) {
+    // Ignore storage restrictions on private/mobile browsers
   }
-  localStorage.setItem(STORAGE_KEY_SAVED_DEVICES, JSON.stringify(list));
 }
 
 export function removePairedDevice(id: string) {
-  const list = getSavedPairedDevices().filter(d => d.id !== id);
-  localStorage.setItem(STORAGE_KEY_SAVED_DEVICES, JSON.stringify(list));
+  try {
+    const list = getSavedPairedDevices().filter(d => d.id !== id);
+    localStorage.setItem(STORAGE_KEY_SAVED_DEVICES, JSON.stringify(list));
+  } catch (e) {
+    // Ignore
+  }
 }
 
 export function getLocalSessionHistory(): SessionHistoryItem[] {
@@ -117,8 +125,12 @@ export function getLocalSessionHistory(): SessionHistoryItem[] {
 }
 
 export function addSessionToLocalHistory(item: SessionHistoryItem) {
-  const list = getLocalSessionHistory();
-  list.unshift(item);
-  if (list.length > 30) list.pop();
-  localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(list));
+  try {
+    const list = getLocalSessionHistory();
+    list.unshift(item);
+    if (list.length > 30) list.pop();
+    localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(list));
+  } catch (e) {
+    // Ignore
+  }
 }
