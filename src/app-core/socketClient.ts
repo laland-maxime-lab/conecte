@@ -52,16 +52,19 @@ export class SocketClient {
 
     this.callbacks.onStatusChange?.('connecting');
 
-    // Connect to same origin host with universal transports
-    this.socket = io({
+    // Connect to origin with robust settings and explicit connection step
+    this.socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
+      autoConnect: false,
       transports: ['websocket', 'polling'],
-      withCredentials: true,
+      reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
-      timeout: 10000,
+      timeout: 15000,
+      withCredentials: false,
     });
 
     this.socket.on('connect', () => {
+      console.log('[Connect Pro] Socket connected:', this.socket?.id);
       this.callbacks.onStatusChange?.('connected');
       // Register immediately upon connection
       this.socket?.emit('register-device', {
@@ -71,11 +74,19 @@ export class SocketClient {
       });
     });
 
-    this.socket.on('disconnect', () => {
+    this.socket.on('disconnect', (reason) => {
+      console.warn('[Connect Pro] Socket disconnected:', reason);
       this.callbacks.onStatusChange?.('disconnected');
     });
 
-    this.socket.on('connect_error', () => {
+    this.socket.on('connect_error', (err: any) => {
+      console.error('[Connect Pro] Socket.IO connection error:', err);
+      console.error('[Connect Pro] Details:', {
+        message: err?.message,
+        name: err?.name,
+        description: err?.description,
+        context: err?.context,
+      });
       this.callbacks.onStatusChange?.('error');
     });
 
@@ -126,6 +137,9 @@ export class SocketClient {
     this.socket.on('relay-data', (data: any) => {
       this.callbacks.onRelayData?.(data.data);
     });
+
+    // Explicitly initiate connection after all event listeners are ready
+    this.socket.connect();
   }
 
   regeneratePin() {
